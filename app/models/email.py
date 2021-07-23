@@ -10,8 +10,8 @@ class Email:
 
     def to_dict(self):
         return {
-            'from': self.email_from,
-            'to': self.email_to,
+            'email_from': self.email_from,
+            'email_to': self.email_to,
             'subject': self.subject,
             'body': self.body
         }

@@ -1,8 +1,7 @@
 import re
-import time
 from datetime import datetime
 
-from base_service import BaseService
+from .base_service import BaseService
 
 
 TOPIC = re.compile('ECOMMERCE.*')
@@ -16,7 +15,7 @@ class LoggerService(BaseService):
         )
 
     async def consume(self):
-        for message in self.consumer:
+        async for message in self.consumer:
             msg_value = message.value.decode('utf8')
             msg_date = datetime.utcfromtimestamp(
                 message.timestamp // 1000

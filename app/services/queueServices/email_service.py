@@ -1,6 +1,6 @@
 import json
 
-from base_service import BaseService
+from .base_service import BaseService
 from models.email import Email
 
 
@@ -14,7 +14,7 @@ class SendEmailService(BaseService):
         )
 
     async def consume(self):
-        for message in self.consumer:
+        async for message in self.consumer:
             try:
                 message_dict = json.loads(message.value)
                 email = Email.from_dict(message_dict)
@@ -22,11 +22,4 @@ class SendEmailService(BaseService):
             except Exception:
                 print(message.value.decode('utf8'))
             finally:
-                self.consumer.commit()
-
-
-if __name__ == '__main__':
-    import asyncio
-
-    service = SendEmailService()
-    asyncio.run(service.consume())
+                await self.consumer.commit()

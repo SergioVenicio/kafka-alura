@@ -1,16 +1,18 @@
+from .user import User
+
 class Order:
-    def __init__(self, id, customer, total):
+    def __init__(self, id, user, total):
         self.id = id
-        self.customer = customer
+        self.user = user
         self.total = total
 
     def __repr__(self):
-        return f'ID: {self.id}, CUSTOMER: {self.customer}, TOTAL: {self.total}'
+        return f'ID: {self.id}, CUSTOMER: {self.user}, TOTAL: {self.total}'
 
     def to_dict(self):
         return {
             'id': self.id,
-            'customer': self.customer,
+            'user': self.user.to_dict(),
             'total': self.total
         }
 
@@ -18,6 +20,6 @@ class Order:
     def from_dict(dict_value):
         return Order(
             dict_value.get('id'),
-            dict_value.get('customer'),
+            User.from_dict(dict_value.get('user')),
             dict_value.get('total'),
         )

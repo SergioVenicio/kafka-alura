@@ -1,5 +1,6 @@
 from models.email import Email
-from base_producer import BaseProducer
+
+from .base_producer import BaseProducer
 
 
 TOPIC = 'ECOMMERCE_SEND_EMAIL'
