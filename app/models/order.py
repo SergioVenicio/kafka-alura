@@ -1,4 +1,5 @@
-from .user import User
+from models.user import User
+
 
 class Order:
     def __init__(self, id, user, total):
@@ -20,6 +21,10 @@ class Order:
     def from_dict(dict_value):
         return Order(
             dict_value.get('id'),
-            User.from_dict(dict_value.get('user')),
+            User(
+                dict_value.get('user')['name'],
+                dict_value.get('user')['email'],
+                dict_value.get('user')['id']
+            ),
             dict_value.get('total'),
         )

@@ -1,5 +1,7 @@
 import os
 
+from exceptions.user import UserNotFoundException
+
 from .base_repository import BaseRepository
 
 from models.user import User
@@ -29,6 +31,39 @@ class UserRepository(BaseRepository):
         """
         self.cursor.execute(sql)
         self.connection.commit()
+
+    def get_users(self):
+        print(f'Get users')
+        sql = f"""
+        SELECT
+            name
+            , email
+            , id
+        FROM users;
+        """
+
+        self.cursor.execute(sql)
+        return [
+            User(row[0], row[1], row[2])
+            for row in self.cursor.fetchall()
+        ]
+
+    def get_user_by_id(self, user_id):
+        sql = f"""
+        SELECT 
+            name
+            , email
+            , id
+        FROM users WHERE id = "{user_id}"
+        LIMIT 1;
+        """
+
+        self.cursor.execute(sql)
+        row = self.cursor.fetchone()
+        if not row:
+            raise UserNotFoundException('User not found')
+
+        return User(row[0], row[1], row[2])
 
     def get_user_by_email(self, email):
         sql = f"""

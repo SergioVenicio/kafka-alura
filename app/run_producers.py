@@ -10,6 +10,7 @@ from repository.user_repository import UserRepository
 
 from models.order import Order
 from models.user import User
+from models.report_request import ReportRequest
 
 
 @inject
@@ -42,7 +43,7 @@ def fake_orders_producer(producer = Provide[Container.order_producer]):
         while True:
             name = str(uuid.uuid4())
             email = name + '@test.com'
-            total = 10000
+            total = 100
 
             order = Order(
                 id=str(uuid.uuid4()),
@@ -56,18 +57,35 @@ def fake_orders_producer(producer = Provide[Container.order_producer]):
         
     asyncio.run(create_message())
 
+
+@inject
+def report_producer(producer = Provide[Container.report_producer]):
+    print('Running Report producer...')
+    user_repository = UserRepository()
+
+    while True:
+        email = input("Customer email: ")
+        # email = 'sergiovenicio2015@gmail.com'
+        user = user_repository.get_user_by_email(email)
+        report_request = ReportRequest(user)
+
+        asyncio.run(producer.send(report_request))
+
+
 if __name__ ==  '__main__':
     container = Container()
     container.wire(modules=[sys.modules[__name__]])
 
     options = {
         1: order_producer,
-        2: fake_orders_producer
+        2: fake_orders_producer,
+        3: report_producer
     }
 
     op = int(input("""\
     1 -> Order
     2 -> Fake Orders
+    3 -> Report
     """))
 
     service = options[op]

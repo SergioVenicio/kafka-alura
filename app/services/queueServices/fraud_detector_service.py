@@ -3,10 +3,14 @@ import json
 from models.order import Order
 from models.email import Email
 
+from exceptions.user import UserNotFoundException
+
 from producers.email_producer import EmailProducer
 from producers.user_producer import UserProducer
 
 from services.create_order_service import CreateOrderService
+
+from repository.user_repository import UserRepository
 
 from .base_service import BaseService
 
@@ -23,13 +27,17 @@ class FraudDetectorService(BaseService):
         self.email_producer = EmailProducer()
         self.user_producer = UserProducer()
         self.create_service = CreateOrderService()
+        self.user_repository = UserRepository()
 
     async def consume(self):
         async for message in self.consumer:
+            await self.consumer.commit()
             message_dict = json.loads(message.value)
             order = Order.from_dict(message_dict)
-
-            await self.user_producer.send(order.user)
+            try:
+                self.user_repository.get_user_by_id(order.user.id)
+            except UserNotFoundException:
+                await self.user_producer.send(order.user)
             await self.create_service.create_order(order)
 
             if order.total >= 4500:

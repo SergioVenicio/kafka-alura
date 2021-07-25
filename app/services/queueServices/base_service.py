@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 import re
 
 from kafka import KafkaConsumer
+from kafka.errors import CommitFailedError
 
 
 class Consumer:
@@ -16,7 +17,10 @@ class Consumer:
             self.consumer.subscribe(pattern=pattern)
 
     async def commit(self):
-        self.consumer.commit()
+        try:
+            self.consumer.commit()
+        except CommitFailedError:
+            return
 
     def __aiter__(self):
         return self

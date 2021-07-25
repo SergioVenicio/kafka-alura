@@ -31,6 +31,22 @@ class OrderRepository(BaseRepository):
         self.cursor.execute(sql)
         self.connection.commit()
 
+    def get_orders_by_user_id(self, user_id):
+        sql = f"""
+        SELECT
+            id
+            , user
+            , total
+        FROM orders
+        WHERE user = "{user_id}"
+        """
+
+        self.cursor.execute(sql)
+        return [
+            Order(row[0], row[1], row[2])
+            for row in self.cursor.fetchall()
+        ]
+
     def get_order_by_id(self, id):
         sql = f"""
         SELECT COUNT(id) FROM orders WHERE id = "{id}";
